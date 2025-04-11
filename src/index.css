@@ -1,1 +1,16 @@
 @import "tailwindcss";
+
+@theme {
+    --font-outfit: 'Outfit', sans-serif;
+    --color-piano-black: #202020;
+    --color-chromaphobic-black: #292929;
+    --color-blue-bell: #9999CC;
+    --color-governor-bay: #535C91;
+}
+
+@font-face {
+    font-family: 'Outfit';
+    src: url('./assets/fonts/Outfit/Outfit-VariableFont_wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: normal;
+  }
