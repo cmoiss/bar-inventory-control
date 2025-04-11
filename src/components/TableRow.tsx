@@ -1,4 +1,6 @@
 import React from "react";
+import Td from "./Td";
+import TableActionButtons from "./TableActionButtons";
 
 interface VolumeVariation {
   id: number;
@@ -14,13 +16,17 @@ interface Product {
   volumeVariations: VolumeVariation[];
 }
 
-export default function TableRow ({ data, actions }) {
-    return (
-      <tr>
-        {data.map((item, index) => (
-          <td key={index}>{item}</td>
-        ))}
-        {actions && <td>{actions}</td>}
-      </tr>
-    );
-  };
+export default function TableRow({ data }) {
+  // if (data.volume >= 1000) {
+
+  // }
+
+  return (
+    <tr>
+      {data.map((item, index) => (
+        <Td key={index}>{item}</Td>
+      ))}
+        <td><TableActionButtons /></td>
+    </tr>
+  );
+};
