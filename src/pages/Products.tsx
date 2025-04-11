@@ -1,38 +1,24 @@
-import TableRow from "@/components/TableRow";
-
-interface VolumeVariation {
-    id: number;
-    volume: number;
-    price: number;
-    internalQuantity: number;
-  }
+import React from "react";
+import ProductsTable from "../components/ProductsTable";
+import DefaultButton from "../components/DefaultButton";
 
 export default function Products() {
     return (
-        <div className="flex flex-col">
-            <input type="text" />
-            <table>
-                <thead>
-                    <th>Nome</th>
-                    <th>Volume</th>
-                    <th>Preço</th>
-                    <th>Estoque interno</th>
-                    <th>Categoria</th>
-                    <th>Ações</th>
-                </thead>
-                <tbody>
-                    <TableRow data={["Coca-cola", 2000, 8.99, 24, "Refrigerante"]} />
-                    <tr>
-                        <td>Coca-Cola</td>
-                        <td>2L</td>
-                        <td>R$8,99</td>
-                        <td>24 unidades</td>
-                        <td>Refrigerante</td>
-                        <td></td>
-                    </tr>
-                </tbody>
-            </table>
-            <button>Cadastrar Novo Produto</button>
+        <div className="w-full">
+            <div className="flex flex-col gap-7">
+                <input type="text" placeholder="Pesquisar produtos..." className="bg-shadow-gray h-12 px-4 py-3 rounded-lg" />
+                <div className="flex flex-col w-full gap-8">
+                    <ProductsTable />
+                    <div className="self-end">
+                        <DefaultButton size="xl">
+                            <span className="flex gap-2">
+                                    <i className="bi bi-plus"></i>
+                                    Cadastrar Novo Produto
+                            </span>
+                        </DefaultButton>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }

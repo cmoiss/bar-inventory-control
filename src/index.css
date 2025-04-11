@@ -3,7 +3,11 @@
 @theme {
     --font-outfit: 'Outfit', sans-serif;
     --color-piano-black: #202020;
+    --color-dark-gray: #2d2d2d;
     --color-chromaphobic-black: #292929;
+    --color-shadow-gray: #3A3A3A;
+    --color-midnight-blue: #272757;
+    --color-space-cadet: #1B1A55;
     --color-blue-bell: #9999CC;
     --color-governor-bay: #535C91;
 }
