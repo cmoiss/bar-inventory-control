@@ -1,32 +1,30 @@
 import React from "react";
 import Td from "./Td";
 import TableActionButtons from "./TableActionButtons";
+import { Product, VolumeVariation } from "../models/product";
 
-interface VolumeVariation {
-  id: number;
-  volume: number;
-  price: number;
-  internalQuantity: number;
+interface TableRowProps {
+  product: Omit<Product, "volumeVariations">;
+  variation: VolumeVariation;
 }
 
-interface Product {
-  id: number;
-  name: string;
-  category: string;
-  volumeVariations: VolumeVariation[];
-}
+export default function TableRow({ product, variation }: TableRowProps) {
+  const formatVolume = (ml: number) => {
+    return ml >= 1000 ? `${ml / 1000}L` : `${ml}mL`;
+  }
 
-export default function TableRow({ data }) {
-  // if (data.volume >= 1000) {
-
-  // }
+  const formatPrice = (price: number) => {
+    return price.toLocaleString('pt-BR', { style: "currency", currency: "BRL" });
+  }
 
   return (
     <tr>
-      {data.map((item, index) => (
-        <Td key={index}>{item}</Td>
-      ))}
-        <td><TableActionButtons /></td>
+      <Td>{product.name}</Td>
+      <Td>{formatVolume(variation.volume)}</Td>
+      <Td>{formatPrice(variation.price)}</Td>
+      <Td>{variation.internalQuantity}</Td>
+      <Td>{product.category}</Td>
+      <Td><TableActionButtons /></Td>
     </tr>
   );
 };
