@@ -2,6 +2,7 @@ import React from "react";
 import TableRow from "./TableRow";
 import Th from "./Th";
 import { Product } from "../models/product";
+import { log } from "console";
 
 interface ProductsTableProps {
     products: Product[];
@@ -28,6 +29,8 @@ export default function ProductsTable({ products }: ProductsTableProps) {
                                 key={`${product.id}-${variation.id}`}
                                 product={product}
                                 variation={variation}
+                                onDoubleClick={() => console.log("Clique duplo!")
+                                }
                             />
                         ))
                     )}

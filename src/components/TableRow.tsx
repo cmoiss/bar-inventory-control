@@ -7,14 +7,24 @@ import { formatVolume, formatPrice } from "../utils/formatters";
 interface TableRowProps {
   product: Omit<Product, "volumeVariations">;
   variation: VolumeVariation;
+  onDoubleClick?: () => void;
 }
 
-export default function TableRow({ product, variation }: TableRowProps) {
+export default function TableRow({ product, variation, onDoubleClick }: TableRowProps) {
   const productVolume = formatVolume(variation.volume);
   const productPrice = formatPrice(variation.price);
 
+  // Verifica se o clique não foi em um botão ou em um elemento dentro dos botões
+  const handleDoubleClick = (e: React.MouseEvent<HTMLTableRowElement>) => {
+    const isActionButton = (e.target as HTMLElement).closest('button');
+
+    if (!isActionButton && onDoubleClick) {
+      onDoubleClick();
+    }
+  };
+
   return (
-    <tr>
+    <tr onDoubleClick={handleDoubleClick}>
       <Td>{product.name}</Td>
       <Td>{productVolume}</Td>
       <Td>{productPrice}</Td>
