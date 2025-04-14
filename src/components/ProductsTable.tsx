@@ -1,14 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import TableRow from "./TableRow";
 import Th from "./Th";
 import { Product } from "../models/product";
-import { log } from "console";
+import GenericModal from "./modals/generic-modal";
 
 interface ProductsTableProps {
     products: Product[];
 }
 
 export default function ProductsTable({ products }: ProductsTableProps) {
+    const [openModal, setOpenModal] = useState(false);
+
     return (
         <div className="rounded-lg overflow-hidden shadow-lg">
             <table className="w-full text-left border-collapse">
@@ -29,13 +31,19 @@ export default function ProductsTable({ products }: ProductsTableProps) {
                                 key={`${product.id}-${variation.id}`}
                                 product={product}
                                 variation={variation}
-                                onDoubleClick={() => console.log("Clique duplo!")
+                                onDoubleClick={() => {
+                                    console.log("Clique duplo!")
+                                    setOpenModal(true)
+                                }
                                 }
                             />
                         ))
                     )}
                 </tbody>
             </table>
+            <GenericModal isOpen={openModal} onClose={() => setOpenModal(false)} title="Teste título" >
+                Teste children
+            </GenericModal>
         </div>
     );
 }
