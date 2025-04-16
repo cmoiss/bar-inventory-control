@@ -11,6 +11,10 @@ const sampleProducts: Product[] = [
         volumeVariations: [
             { id: 1, volume: 500, price: 6.99, internalQuantity: 16 },
             { id: 2, volume: 2000, price: 8.99, internalQuantity: 24 }
+        ],
+        unitPerPackVariations: [
+            { id: 1, unitPerPack: 12, externalQuantity: 8 },
+            { id: 2, unitPerPack: 24, externalQuantity: 4 }
         ]
     },
     // Mais produtos podem ser adicionados aqui
