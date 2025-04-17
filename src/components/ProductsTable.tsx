@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import TableRow from "./TableRow";
 import Th from "./Th";
-import { Product } from "../models/product";
+import { Product, VolumeVariation } from "../models/product";
 import GenericModal from "./modals/generic-modal";
+import ProductInfoModal from "./modals/product-info-modal";
 
 interface ProductsTableProps {
     products: Product[];
@@ -10,6 +11,14 @@ interface ProductsTableProps {
 
 export default function ProductsTable({ products }: ProductsTableProps) {
     const [openModal, setOpenModal] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+    const [selectedVariation, setSelectedVariation] = useState<VolumeVariation | null>(null);
+
+    const handleRowDoubleClick = (product: Product, variation: VolumeVariation) => {
+        setSelectedProduct(product);
+        setSelectedVariation(variation);
+        setOpenModal(true);
+    };
 
     return (
         <div className="rounded-lg overflow-hidden shadow-lg">
@@ -31,19 +40,21 @@ export default function ProductsTable({ products }: ProductsTableProps) {
                                 key={`${product.id}-${variation.id}`}
                                 product={product}
                                 variation={variation}
-                                onDoubleClick={() => {
-                                    console.log("Clique duplo!")
-                                    setOpenModal(true)
-                                }
-                                }
+                                onDoubleClick={() => handleRowDoubleClick(product, variation)}
                             />
                         ))
                     )}
                 </tbody>
             </table>
-            <GenericModal isOpen={openModal} onClose={() => setOpenModal(false)} title="Teste título" >
-                Teste children
-            </GenericModal>
+
+            {selectedProduct && selectedVariation && (
+                <ProductInfoModal
+                    isOpen={openModal}
+                    onClose={() => setOpenModal(false)}
+                    product={selectedProduct}
+                    selectedVariation={selectedVariation}
+                />
+            )}
         </div>
     );
 }

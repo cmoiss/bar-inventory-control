@@ -32,7 +32,6 @@ export default function GenericModal({ isOpen, onClose, children, title }) {
                     <button className='cursor-pointer text-2xl' onClick={onClose}>&times;</button>
                 </span>
                 <div>
-                    <p>Modal muito massa</p>
                     {children}
                 </div>
             </div>
