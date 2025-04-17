@@ -45,12 +45,12 @@ export default function ProductInfoModal({ isOpen, onClose, product, selectedVar
 
                 <InfoLabel
                     label="Estoque Interno"
-                    value={selectedVariation.internalQuantity}
+                    value={selectedVariation.internalQuantity + ' unidades'}
                 />
 
                 <InfoLabel
                     label="Estoque Externo"
-                    value={selectedPack ? selectedPack.externalQuantity : 'N/A'}
+                    value={selectedPack ? selectedPack.externalQuantity + ' packs' : 'N/A'}
                 />
             </div>
 
