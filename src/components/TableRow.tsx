@@ -9,9 +9,10 @@ interface TableRowProps {
   product: Omit<Product, "volumeVariations">;
   variation: VolumeVariation;
   onDoubleClick?: () => void;
+  reloadProducts?: () => void;
 }
 
-export default function TableRow({ product, variation, onDoubleClick }: TableRowProps) {
+export default function TableRow({ product, variation, onDoubleClick, reloadProducts }: TableRowProps) {
   const productVolume = formatVolume(variation.volume);
   const productPrice = formatPrice(variation.price);
 
@@ -24,9 +25,15 @@ export default function TableRow({ product, variation, onDoubleClick }: TableRow
     }
   };
 
-  const handleDelete = () => {
-    deleteProduct(product.id);
-    console.log(`Produto ${product.name} deletado`);
+  const handleDelete = async () => {
+    try {
+      await deleteProduct(product.id);
+      if (reloadProducts) {
+        await reloadProducts();
+      }
+    } catch (error) {
+      console.error(`Erro ao deletar produto ${product.name}`, error);
+    }
   };
 
   return (

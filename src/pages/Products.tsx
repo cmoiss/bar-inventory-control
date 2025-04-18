@@ -42,26 +42,24 @@ export default function Products() {
     const [useMockData, setUseMockData] = useState(false);
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
-    useEffect(() => {
-        const loadProducts = async () => {
-            setIsLoading(true);
-            try {
-                // Em produção, você pode remover esta condição e sempre usar a API
-                if (process.env.NODE_ENV === 'development' && useMockData) {
-                    setProducts(sampleProducts);
-                } else {
-                    const apiProducts = await fetchProducts();
-                    setProducts(apiProducts);
-                }
-            } catch (error) {
-                console.error("Falha ao carregar produtos:", error);
-                // Fallback para dados mockados em caso de erro
+    const loadProducts = async () => {
+        setIsLoading(true);
+        try {
+            if (process.env.NODE_ENV === 'development' && useMockData) {
                 setProducts(sampleProducts);
-            } finally {
-                setIsLoading(false);
+            } else {
+                const apiProducts = await fetchProducts();
+                setProducts(apiProducts);
             }
-        };
+        } catch (error) {
+            console.error("Falha ao carregar produtos:", error);
+            setProducts(sampleProducts);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
+    useEffect(() => {
         loadProducts();
     }, [useMockData]);
 
@@ -83,7 +81,10 @@ export default function Products() {
             <div className="flex flex-col gap-7">
                 <input type="text" placeholder="Pesquisar produtos..." className="bg-shadow-gray h-12 px-4 py-3 rounded-lg" />
                 <div className="flex flex-col w-full gap-8">
-                    <ProductsTable products={products} />
+                    <ProductsTable
+                        products={products}
+                        reloadProducts={loadProducts}
+                    />
                     <div className="self-end">
                         <DefaultButton
                             size="xl"

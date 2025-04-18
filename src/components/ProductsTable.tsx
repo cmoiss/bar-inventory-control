@@ -7,9 +7,10 @@ import ProductInfoModal from "./modals/product-info-modal";
 
 interface ProductsTableProps {
     products: Product[];
+    reloadProducts: () => void;
 }
 
-export default function ProductsTable({ products }: ProductsTableProps) {
+export default function ProductsTable({ products, reloadProducts }: ProductsTableProps) {
     const [openModal, setOpenModal] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [selectedVariation, setSelectedVariation] = useState<VolumeVariation | null>(null);
@@ -41,6 +42,7 @@ export default function ProductsTable({ products }: ProductsTableProps) {
                                 product={product}
                                 variation={variation}
                                 onDoubleClick={() => handleRowDoubleClick(product, variation)}
+                                reloadProducts={reloadProducts}
                             />
                         ))
                     )}
