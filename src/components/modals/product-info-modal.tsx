@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import GenericModal from './generic-modal';
 import { InfoLabel } from '../InfoLabel';
-import { Product, VolumeVariation, UnitPerPackVariation } from '../../models/product';
+import { Product, VolumeVariation, UnitsPerPackVariation } from '../../models/product';
 import { formatVolume, formatPrice } from '../../utils/formatters';
 
 interface ProductInfoModalProps {
@@ -12,11 +12,13 @@ interface ProductInfoModalProps {
 }
 
 export default function ProductInfoModal({ isOpen, onClose, product, selectedVariation }: ProductInfoModalProps) {
-    const [selectedPack, setSelectedPack] = useState<UnitPerPackVariation | null>(
-        product.unitPerPackVariations.length > 0 ? product.unitPerPackVariations[0] : null
+    const [selectedPack, setSelectedPack] = useState<UnitsPerPackVariation | null>(
+        selectedVariation.unitsPerPackVariations.length > 0
+            ? selectedVariation.unitsPerPackVariations[0]
+            : null
     );
 
-    const handlePackSelection = (pack: UnitPerPackVariation) => {
+    const handlePackSelection = (pack: UnitsPerPackVariation) => {
         setSelectedPack(pack);
     };
 
@@ -57,16 +59,16 @@ export default function ProductInfoModal({ isOpen, onClose, product, selectedVar
             <div className="border-t border-governor-bay pt-4">
                 <h3 className="text-lg mb-3 text-blue-bell">Quantidade por pack</h3>
                 <div className="flex gap-2">
-                    {product.unitPerPackVariations.map((pack) => (
+                    {selectedVariation.unitsPerPackVariations.map((pack) => (
                         <button
                             key={pack.id}
                             onClick={() => handlePackSelection(pack)}
                             className={`px-4 py-2 rounded-md border ${selectedPack?.id === pack.id
-                                    ? 'bg-governor-bay border-governor-bay text-white'
-                                    : 'border-gray-600 hover:bg-dark-gray'
+                                ? 'bg-governor-bay border-governor-bay text-white'
+                                : 'border-gray-600 hover:bg-dark-gray'
                                 }`}
                         >
-                            {pack.unitPerPack} unidades
+                            {pack.unitsPerPack} unidades
                         </button>
                     ))}
                 </div>

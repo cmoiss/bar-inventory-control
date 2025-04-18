@@ -1,14 +1,15 @@
+export interface UnitsPerPackVariation {
+    id: number;
+    unitsPerPack: number;
+    externalQuantity: number;
+}
+
 export interface VolumeVariation {
     id: number;
     volume: number;
     price: number;
     internalQuantity: number;
-}
-
-export interface UnitPerPackVariation {
-    id: number;
-    unitPerPack: number;
-    externalQuantity
+    unitsPerPackVariations: UnitsPerPackVariation[];
 }
 
 export interface Product {
@@ -16,5 +17,4 @@ export interface Product {
     name: string;
     category: string;
     volumeVariations: VolumeVariation[];
-    unitPerPackVariations: UnitPerPackVariation[];
 }
