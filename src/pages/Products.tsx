@@ -3,6 +3,7 @@ import ProductsTable from "../components/ProductsTable";
 import DefaultButton from "../components/DefaultButton";
 import { Product } from "../models/product";
 import { fetchProducts } from "../services/productService";
+import CreateProductModal from "../components/modals/CreateProductModal";
 
 const sampleProducts: Product[] = [
     {
@@ -39,6 +40,7 @@ export default function Products() {
     const [products, setProducts] = useState<Product[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [useMockData, setUseMockData] = useState(false);
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
     useEffect(() => {
         const loadProducts = async () => {
@@ -68,6 +70,10 @@ export default function Products() {
         setUseMockData(!useMockData);
     };
 
+    const handleProductCreated = (newProduct: Product) => {
+        setProducts(prev => [...prev, newProduct]);
+    };
+
     if (isLoading) {
         return <div>Carregando produtos...</div>;
     }
@@ -79,7 +85,10 @@ export default function Products() {
                 <div className="flex flex-col w-full gap-8">
                     <ProductsTable products={products} />
                     <div className="self-end">
-                        <DefaultButton size="xl">
+                        <DefaultButton
+                            size="xl"
+                            onClick={() => setIsCreateModalOpen(true)}
+                        >
                             <span className="flex gap-2">
                                 <i className="bi bi-plus"></i>
                                 Cadastrar Novo Produto
@@ -87,6 +96,12 @@ export default function Products() {
                         </DefaultButton>
                     </div>
                 </div>
+
+                <CreateProductModal
+                    isOpen={isCreateModalOpen}
+                    onClose={() => setIsCreateModalOpen(false)}
+                    onProductCreated={handleProductCreated}
+                />
 
                 {/* Botão apenas para desenvolvimento - pode ser removido em produção */}
                 {process.env.NODE_ENV === 'development' && (

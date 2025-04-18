@@ -15,3 +15,24 @@ export async function fetchProducts(): Promise<Product[]> {
         throw error;
     }
 }
+
+export async function createProduct(product: Omit<Product, 'id'>): Promise<Product> {
+    try {
+        const response = await fetch('http://localhost:8080/products/save', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(product)
+        });
+
+        if (!response.ok) {
+            throw new Error('Erro ao cadastrar produto');
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('Erro ao cadastrar produto:', error);
+        throw error;
+    }
+}
