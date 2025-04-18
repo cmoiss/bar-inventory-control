@@ -22,7 +22,10 @@ export default function ProductsTable({ products, reloadProducts }: ProductsTabl
     };
 
     return (
-        <div className="rounded-lg overflow-hidden shadow-lg">
+        <div className="rounded-lg shadow-lg
+        overflow-y-auto
+        max-h-[26rem]
+        ">
             <table className="w-full text-left border-collapse">
                 <thead>
                     <tr className="bg-space-cadet border-b-2 border-b-governor-bay">
