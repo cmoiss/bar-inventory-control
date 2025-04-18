@@ -3,6 +3,7 @@ import Td from "./Td";
 import TableActionButtons from "./TableActionButtons";
 import { Product, VolumeVariation } from "../models/product";
 import { formatVolume, formatPrice } from "../utils/formatters";
+import { deleteProduct } from "../services/productService";
 
 interface TableRowProps {
   product: Omit<Product, "volumeVariations">;
@@ -23,6 +24,11 @@ export default function TableRow({ product, variation, onDoubleClick }: TableRow
     }
   };
 
+  const handleDelete = () => {
+    deleteProduct(product.id);
+    console.log(`Produto ${product.name} deletado`);
+  };
+
   return (
     <tr onDoubleClick={handleDoubleClick}>
       <Td>{product.name}</Td>
@@ -30,7 +36,12 @@ export default function TableRow({ product, variation, onDoubleClick }: TableRow
       <Td>{productPrice}</Td>
       <Td>{variation.internalQuantity}</Td>
       <Td>{product.category}</Td>
-      <Td><TableActionButtons /></Td>
+      <Td>
+        <TableActionButtons
+          productName={product.name}
+          onDelete={handleDelete}
+        />
+      </Td>
     </tr>
   );
 }

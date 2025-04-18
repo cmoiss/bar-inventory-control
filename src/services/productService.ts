@@ -1,6 +1,8 @@
 // services/productService.ts
 import { Product } from "../models/product";
 
+const BASE_URL: string = 'http://localhost:8080/products';
+
 // services/productService.ts
 export async function fetchProducts(): Promise<Product[]> {
     try {
@@ -36,3 +38,18 @@ export async function createProduct(product: Omit<Product, 'id'>): Promise<Produ
         throw error;
     }
 }
+
+export const deleteProduct = async (id: number): Promise<void> => {
+    try {
+        const response = await fetch(`${BASE_URL}/${id}`, {
+            method: 'DELETE'
+        });
+        
+        if (!response.ok) {
+            throw new Error('Erro ao deletar produto');
+        }
+    } catch (error) {
+        console.error('Error deleting product:', error);
+        throw error;
+    }
+};
