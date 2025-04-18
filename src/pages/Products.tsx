@@ -3,7 +3,7 @@ import ProductsTable from "../components/ProductsTable";
 import DefaultButton from "../components/DefaultButton";
 import { Product } from "../models/product";
 import { fetchProducts } from "../services/productService";
-import CreateProductModal from "../components/modals/CreateProductModal";
+import CreateProductModal from "../components/modals/create-product-modal/CreateProductModal";
 
 const sampleProducts: Product[] = [
     {
