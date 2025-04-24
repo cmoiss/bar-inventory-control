@@ -1,16 +1,7 @@
 import React, { useState } from 'react';
 import GenericModal from '../generic-modal';
-import { Product } from '../../../models/product';
-
-interface VolumeVariation {
-  volume: number;
-  price: number;
-  internalQuantity: number;
-  unitsPerPackVariations: {
-    unitsPerPack: number;
-    externalQuantity: number;
-  }[];
-}
+import { Product, VolumeVariation, UnitsPerPackVariation } from '../../../models/product';
+import { createProduct } from '../../../services/productService';
 
 interface CreateProductModalProps {
   isOpen: boolean;
@@ -18,14 +9,16 @@ interface CreateProductModalProps {
   onProductCreated: (product: Product) => void;
 }
 
-const CreateProductModal: React.FC<CreateProductModalProps> = ({ 
-  isOpen, 
-  onClose, 
-  onProductCreated 
+const CreateProductModal: React.FC<CreateProductModalProps> = ({
+  isOpen,
+  onClose,
+  onProductCreated
 }) => {
   const [productName, setProductName] = useState('');
   const [productCategory, setProductCategory] = useState('');
   const [volumeVariations, setVolumeVariations] = useState<VolumeVariation[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const volumeOptions = [
     { value: 50, label: '50ml' },
@@ -49,13 +42,14 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({
   ];
 
   const categoryOptions = [
-    'Vodka', 'Whisky', 'Cerveja', 'Vinho', 'Espumante', 
+    'Vodka', 'Whisky', 'Cerveja', 'Vinho', 'Espumante',
     'Gin', 'Rum', 'Tequila', 'Energético', 'Refrigerante',
     'Água', 'Suco', 'Drink', 'Outros'
   ];
 
   const addVolumeVariation = () => {
     setVolumeVariations([...volumeVariations, {
+      id: 0, // Temporário - será gerado pelo backend
       volume: 0,
       price: 0,
       internalQuantity: 0,
@@ -72,6 +66,7 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({
   const addPackVariation = (volumeIndex: number) => {
     const newVariations = [...volumeVariations];
     newVariations[volumeIndex].unitsPerPackVariations.push({
+      id: 0, // Temporário - será gerado pelo backend
       unitsPerPack: 0,
       externalQuantity: 0
     });
@@ -109,40 +104,61 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({
     setVolumeVariations(newVariations);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
 
     if (!productName || !productCategory || volumeVariations.length === 0) {
-      alert('Preencha todos os campos obrigatórios');
+      setError('Preencha todos os campos obrigatórios');
       return;
     }
 
-    const newProduct: Product = {
-      id: Math.floor(Math.random() * 1000), // ID temporário - será gerado pelo backend
-      name: productName,
-      category: productCategory,
-      volumeVariations: volumeVariations.map(variation => ({
-        id: Math.floor(Math.random() * 1000), // ID temporário
-        volume: variation.volume,
-        price: variation.price,
-        internalQuantity: variation.internalQuantity,
-        unitsPerPackVariations: variation.unitsPerPackVariations.map(pack => ({
-          id: Math.floor(Math.random() * 1000), // ID temporário
-          unitsPerPack: pack.unitsPerPack,
-          externalQuantity: pack.externalQuantity
-        }))
-      }))
-    };
+    // Validação adicional para garantir que todas as variações estão preenchidas
+    for (const variation of volumeVariations) {
+      if (variation.volume <= 0 || variation.price <= 0) {
+        setError('Preencha todos os campos de volume e preço corretamente');
+        return;
+      }
 
-    onProductCreated(newProduct);
-    onClose();
-    resetForm();
+      for (const pack of variation.unitsPerPackVariations) {
+        if (pack.unitsPerPack <= 0) {
+          setError('Preencha todas as unidades por pack corretamente');
+          return;
+        }
+      }
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const newProductData: Omit<Product, 'id'> = {
+        name: productName,
+        category: productCategory,
+        volumeVariations: volumeVariations.map(variation => ({
+          ...variation,
+          unitsPerPackVariations: variation.unitsPerPackVariations.map(pack => ({
+            ...pack
+          }))
+        }))
+      };
+
+      const createdProduct = await createProduct(newProductData);
+      onProductCreated(createdProduct);
+      onClose();
+      resetForm();
+    } catch (err) {
+      console.error('Erro ao criar produto:', err);
+      setError('Erro ao cadastrar produto. Por favor, tente novamente.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const resetForm = () => {
     setProductName('');
     setProductCategory('');
     setVolumeVariations([]);
+    setError(null);
   };
 
   return (
@@ -152,6 +168,13 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({
       title="Cadastrar Novo Produto"
     >
       <form onSubmit={handleSubmit} className="flex flex-col gap-6 max-h-[80vh]">
+        {/* Mensagem de erro */}
+        {error && (
+          <div className="bg-red bg-opacity-20 text-red border border-red rounded-lg p-3">
+            {error}
+          </div>
+        )}
+
         {/* Container principal com scroll */}
         <div className="overflow-y-auto pr-2 -mr-2 flex-grow">
           {/* Informações Básicas */}
@@ -201,6 +224,7 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({
                 type="button"
                 onClick={addVolumeVariation}
                 className="flex items-center gap-2 px-3 py-1.5 bg-governor-bay text-white rounded-lg hover:bg-midnight-blue transition-colors text-sm"
+                disabled={isSubmitting}
               >
                 <i className="bi bi-plus"></i>
                 Adicionar Variação
@@ -223,6 +247,7 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({
                           onChange={(e) => handleVolumeChange(volIndex, 'volume', e.target.value)}
                           className="w-full px-4 py-2 bg-chromaphobic-black border border-shadow-gray rounded-lg focus:outline-none focus:border-blue-bell focus:ring-1 focus:ring-blue-bell"
                           required
+                          disabled={isSubmitting}
                         >
                           <option value="">Selecione</option>
                           {volumeOptions.map(option => (
@@ -241,6 +266,7 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({
                           onChange={(e) => handleVolumeChange(volIndex, 'price', e.target.value)}
                           className="w-full px-4 py-2 bg-chromaphobic-black border border-shadow-gray rounded-lg focus:outline-none focus:border-blue-bell focus:ring-1 focus:ring-blue-bell"
                           required
+                          disabled={isSubmitting}
                         />
                       </div>
 
@@ -253,6 +279,7 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({
                           onChange={(e) => handleVolumeChange(volIndex, 'internalQuantity', e.target.value)}
                           className="w-full px-4 py-2 bg-chromaphobic-black border border-shadow-gray rounded-lg focus:outline-none focus:border-blue-bell focus:ring-1 focus:ring-blue-bell"
                           required
+                          disabled={isSubmitting}
                         />
                       </div>
                     </div>
@@ -265,6 +292,7 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({
                           type="button"
                           onClick={() => addPackVariation(volIndex)}
                           className="flex items-center gap-1 px-2 py-1 bg-governor-bay text-white rounded-lg hover:bg-midnight-blue transition-colors text-xs"
+                          disabled={isSubmitting}
                         >
                           <i className="bi bi-plus"></i>
                           Adicionar Pack
@@ -287,6 +315,7 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({
                                     onChange={(e) => handlePackChange(volIndex, packIndex, 'unitsPerPack', e.target.value)}
                                     className="w-full px-3 py-1 bg-chromaphobic-black border border-shadow-gray rounded-lg focus:outline-none focus:border-blue-bell focus:ring-1 focus:ring-blue-bell text-sm"
                                     required
+                                    disabled={isSubmitting}
                                   >
                                     <option value="">Selecione</option>
                                     {packOptions.map(option => (
@@ -304,6 +333,7 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({
                                     onChange={(e) => handlePackChange(volIndex, packIndex, 'externalQuantity', e.target.value)}
                                     className="w-full px-3 py-1 bg-chromaphobic-black border border-shadow-gray rounded-lg focus:outline-none focus:border-blue-bell focus:ring-1 focus:ring-blue-bell text-sm"
                                     required
+                                    disabled={isSubmitting}
                                   />
                                 </div>
                               </div>
@@ -313,6 +343,7 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({
                                   type="button"
                                   onClick={() => removePackVariation(volIndex, packIndex)}
                                   className="flex items-center gap-1 px-2 py-1 bg-red text-white rounded-lg hover:bg-light-red transition-colors text-xs"
+                                  disabled={isSubmitting}
                                 >
                                   <i className="bi bi-trash"></i>
                                   Remover Pack
@@ -329,6 +360,7 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({
                         type="button"
                         onClick={() => removeVolumeVariation(volIndex)}
                         className="flex items-center gap-2 px-3 py-1.5 bg-red text-white rounded-lg hover:bg-light-red transition-colors text-sm"
+                        disabled={isSubmitting}
                       >
                         <i className="bi bi-trash"></i>
                         Remover Variação
@@ -350,14 +382,26 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({
               resetForm();
             }}
             className="px-6 py-2 border border-blue-bell text-blue-bell rounded-lg hover:bg-blue-bell hover:bg-opacity-10 transition-colors"
+            disabled={isSubmitting}
           >
             Cancelar
           </button>
           <button
             type="submit"
-            className="px-6 py-2 bg-blue-bell text-white rounded-lg hover:bg-governor-bay transition-colors"
+            className="px-6 py-2 bg-blue-bell text-white rounded-lg hover:bg-governor-bay transition-colors flex items-center gap-2"
+            disabled={isSubmitting}
           >
-            Salvar Produto
+            {isSubmitting ? (
+              <>
+                <i className="bi bi-arrow-repeat animate-spin"></i>
+                Salvando...
+              </>
+            ) : (
+              <>
+                <i className="bi bi-check-lg"></i>
+                Salvar Produto
+              </>
+            )}
           </button>
         </div>
       </form>
