@@ -3,11 +3,14 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "main": "electron-main.js",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "electron:start": "vite dev & electron .",
+    "electron:build": "vite build && electron-builder"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.3",
@@ -25,6 +28,7 @@
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.2",
     "@vitejs/plugin-react": "^4.3.4",
+    "electron": "^35.1.5",
     "eslint": "^9.21.0",
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-react-refresh": "^0.4.19",
